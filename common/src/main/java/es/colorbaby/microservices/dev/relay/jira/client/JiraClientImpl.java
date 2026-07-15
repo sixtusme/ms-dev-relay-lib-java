@@ -165,6 +165,26 @@ public class JiraClientImpl implements JiraClient {
   }
 
   @Override
+  public JiraCommentDto addCommentAdf(String issueKey, Object adfDocument) {
+    URI uri = apiUri("/issue/{key}/comment").buildAndExpand(issueKey).toUri();
+    Map<String, Object> requestBody = Map.of("body", adfDocument);
+    return execute(() -> jiraRestTemplate.postForObject(uri, requestBody, JiraCommentDto.class),
+        "Error añadiendo comentario (ADF) en " + issueKey);
+  }
+
+  @Override
+  public void addLabel(String issueKey, String label) {
+    URI uri = apiUri("/issue/{key}").buildAndExpand(issueKey).toUri();
+    // update.labels.add es no destructivo: conserva las etiquetas ya existentes.
+    Map<String, Object> requestBody =
+        Map.of("update", Map.of("labels", List.of(Map.of("add", label))));
+    execute(() -> {
+      jiraRestTemplate.put(uri, requestBody);
+      return null;
+    }, "Error añadiendo la etiqueta '" + label + "' en " + issueKey);
+  }
+
+  @Override
   public List<JiraTransitionDto> getTransitions(String issueKey) {
     URI uri = apiUri("/issue/{key}/transitions").buildAndExpand(issueKey).toUri();
     JiraTransitionsResultDto result = execute(

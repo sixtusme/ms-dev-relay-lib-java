@@ -35,6 +35,20 @@ public interface JiraClient {
   JiraCommentDto addComment(String issueKey, String plainTextBody);
 
   /**
+   * Añade un comentario a partir de un documento ADF ya construido (para
+   * menciones, citas, formato…). <b>Solo Jira Cloud</b>: en Server/DC el cuerpo
+   * es wiki markup, no ADF. El documento es el nodo {@code doc} completo, tal y
+   * como lo produce {@code JiraAdf.doc(...)}.
+   */
+  JiraCommentDto addCommentAdf(String issueKey, Object adfDocument);
+
+  /**
+   * Añade (sin borrar las existentes) una etiqueta a una issue. Idempotente en
+   * Jira: repetir la misma etiqueta no la duplica.
+   */
+  void addLabel(String issueKey, String label);
+
+  /**
    * Lista las transiciones de workflow disponibles para una issue en su
    * estado actual.
    */
