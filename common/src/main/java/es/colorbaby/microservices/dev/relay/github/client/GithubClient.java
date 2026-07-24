@@ -1,6 +1,7 @@
 package es.colorbaby.microservices.dev.relay.github.client;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -57,6 +58,26 @@ public interface GithubClient {
    * @param sha     SHA del blob actual si se actualiza; null si se crea
    */
   void putFile(String repo, String branch, String path, String content, String message, String sha);
+
+  /**
+   * Escribe VARIOS ficheros en una rama con un <b>único commit</b>, vía Git Data API: árbol nuevo
+   * sobre el actual → commit → mover la rama.
+   *
+   * <p>Es lo que hay que usar cuando los cambios forman una unidad. Con {@link #putFile} uno a uno,
+   * cada fichero es un commit independiente: si falla el tercero de cinco, la rama se queda a medias
+   * y la PR enseña un cambio incoherente, que ni compila ni se puede revisar. Aquí, o entran todos o
+   * no entra ninguno.
+   *
+   * <p>De paso son 5 llamadas en total en vez de dos por fichero, y no hace falta el SHA de cada
+   * blob: el árbol se construye sobre el actual, así que crear y actualizar se tratan igual.
+   *
+   * @param repo    nombre del repo
+   * @param branch  rama sobre la que se commitea
+   * @param files   ruta → contenido completo del fichero (texto). Crea o sobrescribe
+   * @param message mensaje del commit
+   * @return SHA del commit creado
+   */
+  String commitFiles(String repo, String branch, Map<String, String> files, String message);
 
   /**
    * Rutas de todos los ficheros (blobs) de una rama, recursivo. Le da al coder el mapa del repo.

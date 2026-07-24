@@ -2,11 +2,13 @@ package es.colorbaby.microservices.dev.relay.github.config;
 
 import es.colorbaby.microservices.dev.relay.github.client.GithubClient;
 import es.colorbaby.microservices.dev.relay.github.client.GithubClientImpl;
+import java.net.http.HttpClient;
+import java.time.Duration;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -21,12 +23,21 @@ import org.springframework.web.client.RestTemplate;
 @EnableConfigurationProperties(GithubProperties.class)
 public class GithubAutoConfiguration {
 
+  /**
+   * OJO con la fábrica: tiene que ser la del {@code java.net.http.HttpClient}, no
+   * {@code SimpleClientHttpRequestFactory}. Esa va sobre {@code HttpURLConnection}, que <b>no
+   * admite PATCH</b> y falla con {@code ProtocolException: Invalid HTTP method}. Y PATCH hace falta:
+   * es como GitHub mueve una rama ({@code PATCH /git/refs/heads/…}), que es el último paso del
+   * commit atómico de varios ficheros.
+   */
   @Bean
   @ConditionalOnMissingBean
   public GithubClient githubClient(final GithubProperties githubProperties) {
-    SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-    requestFactory.setConnectTimeout(githubProperties.getConnectTimeoutMs());
-    requestFactory.setReadTimeout(githubProperties.getReadTimeoutMs());
+    HttpClient httpClient = HttpClient.newBuilder()
+        .connectTimeout(Duration.ofMillis(githubProperties.getConnectTimeoutMs()))
+        .build();
+    JdkClientHttpRequestFactory requestFactory = new JdkClientHttpRequestFactory(httpClient);
+    requestFactory.setReadTimeout(Duration.ofMillis(githubProperties.getReadTimeoutMs()));
 
     RestTemplate githubRestTemplate = new RestTemplate(requestFactory);
     githubRestTemplate.getInterceptors().add(new GithubAuthInterceptor(githubProperties));

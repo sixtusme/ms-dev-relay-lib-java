@@ -74,6 +74,59 @@ public class GithubClientImpl implements GithubClient {
     }, "escribiendo el fichero " + path + " en " + repo);
   }
 
+  /**
+   * Los cuatro pasos de la Git Data API. Se hace en este orden a propósito: la rama no se mueve
+   * hasta el final, así que si algo falla por el camino el repositorio se queda intacto, sin ramas a
+   * medias que luego haya que limpiar a mano.
+   */
+  @Override
+  public String commitFiles(final String repo, final String branch,
+      final Map<String, String> files, final String message) {
+    if (files == null || files.isEmpty()) {
+      throw new GithubClientException("No hay ficheros que commitear en " + repo);
+    }
+    final String headSha = getBranchSha(repo, branch);
+    final String baseTree = treeShaOf(repo, headSha);
+
+    // Cada entrada lleva el contenido en claro: GitHub crea el blob. mode 100644 = fichero normal.
+    final List<Map<String, String>> entries = new ArrayList<>();
+    files.forEach((path, content) -> entries.add(Map.of(
+        "path", path,
+        "mode", "100644",
+        "type", "blob",
+        "content", content == null ? "" : content)));
+
+    final Map<?, ?> tree = execute(
+        () -> githubRestTemplate.postForObject(repoUrl(repo) + "/git/trees",
+            Map.of("base_tree", baseTree, "tree", entries), Map.class),
+        "creando el árbol de " + files.size() + " fichero(s) en " + repo);
+    final String treeSha = tree == null ? null : str(tree.get("sha"));
+
+    final Map<?, ?> commit = execute(
+        () -> githubRestTemplate.postForObject(repoUrl(repo) + "/git/commits",
+            Map.of("message", message, "tree", treeSha, "parents", List.of(headSha)), Map.class),
+        "creando el commit en " + repo);
+    final String commitSha = commit == null ? null : str(commit.get("sha"));
+
+    execute(() -> {
+      githubRestTemplate.patchForObject(repoUrl(repo) + "/git/refs/heads/" + branch,
+          Map.of("sha", commitSha), Map.class);
+      return null;
+    }, "moviendo la rama " + branch + " de " + repo);
+
+    return commitSha;
+  }
+
+  /** Árbol de un commit: es la base sobre la que se construye el nuevo. */
+  private String treeShaOf(final String repo, final String commitSha) {
+    final Map<?, ?> commit = execute(
+        () -> githubRestTemplate.getForObject(
+            repoUrl(repo) + "/git/commits/" + commitSha, Map.class),
+        "leyendo el commit " + commitSha + " de " + repo);
+    final Object tree = commit == null ? null : commit.get("tree");
+    return tree instanceof Map<?, ?> map ? str(map.get("sha")) : null;
+  }
+
   @Override
   public List<String> listPaths(final String repo, final String ref) {
     Map<?, ?> tree = execute(

@@ -48,6 +48,15 @@
       <artifactId>resilience4j-circuitbreaker</artifactId>
       <version>2.2.0</version>
     </dependency>
+    <!-- SSH para SshInfraClient (mirar el contenedor en la maquina destino cuando falla un
+         despliegue). Va AQUI y no solo en el pom del servicio: la clase que lo usa vive en esta
+         libreria, asi que sin esta dependencia la libreria no compila por si sola. Es el fork
+         mantenido de JSch; el com.jcraft original esta abandonado. -->
+    <dependency>
+      <groupId>com.github.mwiede</groupId>
+      <artifactId>jsch</artifactId>
+      <version>0.2.22</version>
+    </dependency>
   </dependencies>
 
   <build>
