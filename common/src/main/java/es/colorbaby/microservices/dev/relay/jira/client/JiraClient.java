@@ -18,6 +18,16 @@ public interface JiraClient {
   JiraIssueDto getIssue(String issueKey);
 
   /**
+   * Descarga el contenido de un adjunto. La URL viene en {@code fields.attachment[].content} y
+   * exige la misma autenticación que el resto del API, así que hay que bajarla con este cliente
+   * y no con una petición anónima.
+   *
+   * @param contentUrl URL de descarga del adjunto
+   * @return el contenido del fichero
+   */
+  byte[] downloadAttachment(String contentUrl);
+
+  /**
    * Busca todas las issues que cumplen la JQL, recorriendo internamente la
    * paginación (por cursor en Jira Cloud, por offset en Server/DC) hasta el
    * tope de páginas configurado (maestro.jira.search-max-pages).

@@ -74,6 +74,15 @@ public class JiraClientImpl implements JiraClient {
   }
 
   @Override
+  public byte[] downloadAttachment(String contentUrl) {
+    // La URL ya viene completa de Jira; se usa tal cual con el RestTemplate autenticado.
+    URI uri = URI.create(contentUrl);
+    byte[] content = execute(() -> jiraRestTemplate.getForObject(uri, byte[].class),
+        "Error descargando el adjunto " + contentUrl);
+    return content == null ? new byte[0] : content;
+  }
+
+  @Override
   public List<JiraIssueDto> searchIssuesByJql(String jql) {
     return jiraProperties.getAuthMode() == JiraAuthMode.SERVER_PAT
         ? searchByOffset(jql)
