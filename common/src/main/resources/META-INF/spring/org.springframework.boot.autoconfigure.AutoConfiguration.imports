@@ -1,1 +1,5 @@
 es.colorbaby.microservices.dev.relay.jira.config.JiraAutoConfiguration
+es.colorbaby.microservices.dev.relay.github.config.GithubAutoConfiguration
+es.colorbaby.microservices.dev.relay.jenkins.config.JenkinsAutoConfiguration
+es.colorbaby.microservices.dev.relay.harbor.config.HarborAutoConfiguration
+es.colorbaby.microservices.dev.relay.infra.config.InfraAutoConfiguration

@@ -91,6 +91,49 @@ public interface GithubClient {
   PullRequest createPullRequest(
       String repo, String head, String base, String title, String body, boolean draft);
 
+  /**
+   * PRs abiertas de un repo contra una rama base. Para reconstruir qué está trabajando sixai
+   * (una sesión por issue) leyendo GitHub, sin necesidad de una base de datos propia.
+   *
+   * @param repo       nombre del repo (sin la org)
+   * @param baseBranch rama base para filtrar (ej. {@code develop}); null o vacío = todas
+   * @return PRs abiertas (número, url, rama origen)
+   */
+  default List<PullRequest> listOpenPullRequests(String repo, String baseBranch) {
+    return listPullRequests(repo, baseBranch, "open");
+  }
+
+  /**
+   * PRs de un repo contra una rama base, filtradas por estado. En la promoción a PROD las PRs ya
+   * están mergeadas, así que hay que mirar las {@code closed} para saber qué repos tocó la tarea.
+   *
+   * @param repo       nombre del repo (sin la org)
+   * @param baseBranch rama base para filtrar (ej. {@code develop}); null o vacío = todas
+   * @param state      {@code open}, {@code closed} o {@code all}
+   * @return PRs (número, url, rama origen)
+   */
+  List<PullRequest> listPullRequests(String repo, String baseBranch, String state);
+
+  /**
+   * Mergea una rama en otra directamente, sin PR intermedia ({@code POST /merges}). Es como se
+   * promociona {@code develop} → {@code main}/{@code master} al pasar a producción.
+   *
+   * @param repo    nombre del repo
+   * @param base    rama destino (ej. {@code main})
+   * @param head    rama origen (ej. {@code develop})
+   * @param message mensaje del commit de merge
+   */
+  void mergeBranches(String repo, String base, String head, String message);
+
+  /**
+   * Mergea una pull request.
+   *
+   * @param repo   nombre del repo
+   * @param number número de la PR
+   * @param method método de merge: {@code merge}, {@code squash} o {@code rebase}
+   */
+  void mergePullRequest(String repo, int number, String method);
+
   /** Rama por defecto de un repo. */
   record DefaultBranch(String name, String sha) {
   }

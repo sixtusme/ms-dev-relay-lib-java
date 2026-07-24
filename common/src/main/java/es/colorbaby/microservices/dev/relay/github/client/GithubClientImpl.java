@@ -129,6 +129,48 @@ public class GithubClientImpl implements GithubClient {
     return new PullRequest(number, url, head);
   }
 
+  @Override
+  public List<PullRequest> listPullRequests(final String repo, final String baseBranch,
+      final String state) {
+    final String effectiveState = state == null || state.isBlank() ? "open" : state;
+    final String url = baseBranch == null || baseBranch.isBlank()
+        ? repoUrl(repo) + "/pulls?state=" + effectiveState
+        : repoUrl(repo) + "/pulls?state=" + effectiveState + "&base=" + baseBranch;
+    final List<?> result = execute(
+        () -> githubRestTemplate.getForObject(url, List.class),
+        "listando PRs (" + effectiveState + ") de " + repo);
+    final List<PullRequest> prs = new ArrayList<>();
+    if (result != null) {
+      for (final Object item : result) {
+        if (item instanceof Map<?, ?> pr) {
+          final int number = pr.get("number") instanceof Number n ? n.intValue() : 0;
+          final String prUrl = str(pr.get("html_url"));
+          final String head = pr.get("head") instanceof Map<?, ?> h ? str(h.get("ref")) : null;
+          prs.add(new PullRequest(number, prUrl, head));
+        }
+      }
+    }
+    return prs;
+  }
+
+  @Override
+  public void mergeBranches(final String repo, final String base, final String head,
+      final String message) {
+    final Map<String, Object> body = Map.of("base", base, "head", head, "commit_message", message);
+    execute(
+        () -> githubRestTemplate.postForObject(repoUrl(repo) + "/merges", body, Map.class),
+        "mergeando " + head + " en " + base + " de " + repo);
+  }
+
+  @Override
+  public void mergePullRequest(final String repo, final int number, final String method) {
+    final Map<String, Object> body = Map.of("merge_method", method == null ? "squash" : method);
+    execute(() -> {
+      githubRestTemplate.put(repoUrl(repo) + "/pulls/" + number + "/merge", body);
+      return null;
+    }, "mergeando la PR #" + number + " de " + repo);
+  }
+
   private String repoUrl(final String repo) {
     return properties.getBaseUrl() + "/repos/" + properties.getOrg() + "/" + repo;
   }
