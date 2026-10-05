@@ -1,0 +1,10 @@
+type: object
+properties:
+  issueKey:
+    type: string
+  title:
+    type: string
+  prs:
+    type: array
+    items:
+      $ref: '../common/SixaiPrDto.yaml'

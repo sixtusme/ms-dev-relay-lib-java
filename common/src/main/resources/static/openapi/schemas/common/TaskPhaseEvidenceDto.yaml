@@ -1,0 +1,20 @@
+type: object
+properties:
+  repo:
+    type: string
+  recommendation:
+    type: string
+  kind:
+    type: string
+  detail:
+    type: string
+  url:
+    type: string
+  actor:
+    type: string
+  reasonCode:
+    type: string
+  source:
+    type: string
+  recordedAt:
+    type: string

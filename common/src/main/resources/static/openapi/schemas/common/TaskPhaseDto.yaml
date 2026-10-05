@@ -1,0 +1,19 @@
+type: object
+properties:
+  phase:
+    type: string
+  iteration:
+    type: integer
+    format: int32
+  status:
+    type: string
+  decidedBy:
+    type: string
+  startedAt:
+    type: string
+  finishedAt:
+    type: string
+  evidence:
+    type: array
+    items:
+      $ref: './TaskPhaseEvidenceDto.yaml'

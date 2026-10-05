@@ -20,6 +20,18 @@ tags:
   - name: Jira
     description: Cliente Java para REST API de Jira lectura de issues, comentarios, transiciones de estado y asignación.
       Sin lógica de negocio ni filtrado; eso vive en el micro (back).
+  - name: Tasks
+    description: Gestión y monitorización de las tareas activas y su estado de ejecución.
+  - name: Sessions
+    description: Consulta de las sesiones de SixAI y la información asociada a sus pull requests.
+  - name: Approvals
+    description: Gestión de las aprobaciones de las tareas o incidencias que requieren intervención del usuario.
+  - name: Reports
+    description: Consulta y acceso al contenido de los informes generados para una incidencia.
+  - name: Insights
+    description: Consulta de información y métricas mediante el catálogo de insights y ejecución de consultas.
+  - name: Chat
+    description: Gestión de conversaciones con SixAI, incluyendo el historial y el envío de nuevos mensajes.
 
 servers:
   - url: /api
@@ -31,6 +43,27 @@ paths:
   # =========================
   /webhooks/jira:
     $ref: "./openapi/paths/webhooks/jira/post_webhooks_jira.yaml"
+  # =========================
+  # SIXAI
+  # =========================
+  /sixai/tasks/active:
+    $ref: "./openapi/paths/sixai/tasks/tasks.yaml"
+  /sixai/tasks/{issueKey}:
+    $ref: "./openapi/paths/sixai/tasks/task_by_id.yaml"
+  /sixai/sessions:
+    $ref: "./openapi/paths/sixai/sessions/list_session.yaml"
+  /sixai/issues/{issueKey}/approve:
+    $ref: "./openapi/paths/sixai/issues/issue_approval.yaml"
+  /sixai/reports:
+    $ref: "./openapi/paths/sixai/reports/list_reports.yaml"
+  /sixai/reports/{id}/content:
+    $ref: "./openapi/paths/sixai/reports/report_content.yaml"
+  /sixai/insights/catalog:
+    $ref: "./openapi/paths/sixai/insights/list_insights_catalog.yaml"
+  /sixai/insights/query:
+    $ref: "./openapi/paths/sixai/insights/post_insight_query.yaml"
+  /sixai/chat:
+    $ref: "./openapi/paths/sixai/chat/chat.yaml"
 
 components:
   securitySchemes:
@@ -53,3 +86,31 @@ components:
       $ref: "./openapi/schemas/response/jira/JiraTransitionDto.yaml"
     JiraTransitionsResultDto:
       $ref: "./openapi/schemas/response/jira/JiraTransitionsResultDto.yaml"
+    ActiveTaskDto:
+      $ref: "./openapi/schemas/response/ActiveTaskDto.yaml"
+    TaskDetailDto:
+      $ref: "./openapi/schemas/response/TaskDetailDto.yaml"
+    TaskEventDto:
+      $ref: "./openapi/schemas/common/TaskEventDto.yaml"
+    TaskDeploymentDto:
+      $ref: "./openapi/schemas/common/TaskDeploymentDto.yaml"
+    TaskPhaseDto:
+      $ref: "./openapi/schemas/common/TaskPhaseDto.yaml"
+    TaskPhaseEvidenceDto:
+      $ref: "./openapi/schemas/common/TaskPhaseEvidenceDto.yaml"
+    SixaiSessionDto:
+      $ref: "./openapi/schemas/response/SixaiSessionDto.yaml"
+    SixaiPrDto:
+      $ref: "./openapi/schemas/common/SixaiPrDto.yaml"
+    ReportDto:
+      $ref: "./openapi/schemas/response/ReportDto.yaml"
+    InsightCatalogItemDto:
+      $ref: "./openapi/schemas/response/InsightCatalogItemDto.yaml"
+    InsightRequestDto:
+      $ref: "./openapi/schemas/request/InsightRequestDto.yaml"
+    InsightResultDto:
+      $ref: "./openapi/schemas/response/InsightResultDto.yaml"
+    ChatMessageDto:
+      $ref: "./openapi/schemas/response/ChatMessageDto.yaml"
+    ChatRequestDto:
+      $ref: "./openapi/schemas/request/ChatRequestDto.yaml"

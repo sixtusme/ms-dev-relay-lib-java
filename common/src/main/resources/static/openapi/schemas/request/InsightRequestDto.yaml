@@ -1,0 +1,8 @@
+type: object
+properties:
+  query:
+    type: string
+  question:
+    type: string
+  issueKey:
+    type: string

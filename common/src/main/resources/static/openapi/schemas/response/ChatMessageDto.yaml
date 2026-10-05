@@ -1,0 +1,8 @@
+type: object
+properties:
+  role:
+    type: string
+  content:
+    type: string
+  createdAt:
+    type: string

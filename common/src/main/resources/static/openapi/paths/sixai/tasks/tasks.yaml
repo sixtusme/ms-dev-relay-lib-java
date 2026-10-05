@@ -1,0 +1,14 @@
+get:
+  tags:
+    - Tasks
+  operationId: listActiveTasks
+  summary: Lista las tareas que sixai tiene en curso ahora mismo
+  responses:
+    '200':
+      description: Tareas activas
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '../../../schemas/response/ActiveTaskDto.yaml'

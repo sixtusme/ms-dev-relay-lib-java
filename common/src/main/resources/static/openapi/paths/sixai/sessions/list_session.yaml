@@ -1,0 +1,14 @@
+get:
+  tags:
+    - Sessions
+  operationId: listSixaiSessions
+  summary: Lista las sesiones SixAI
+  responses:
+    '200':
+      description: Sesiones
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '../../../schemas/response/SixaiSessionDto.yaml'

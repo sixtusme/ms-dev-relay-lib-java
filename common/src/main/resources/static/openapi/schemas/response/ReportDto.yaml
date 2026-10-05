@@ -1,0 +1,21 @@
+type: object
+properties:
+  id:
+    type: integer
+    format: int64
+  issueKey:
+    type: string
+  kind:
+    type: string
+    enum:
+      - DELIVERY
+      - ATTACHMENT
+  title:
+    type: string
+  format:
+    type: string
+  sizeBytes:
+    type: integer
+    format: int64
+  generatedAt:
+    type: string

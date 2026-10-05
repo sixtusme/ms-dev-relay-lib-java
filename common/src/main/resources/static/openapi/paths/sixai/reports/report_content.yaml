@@ -1,0 +1,21 @@
+get:
+  tags:
+    - Reports
+  operationId: getReportContent
+  summary: Obtiene el contenido de un informe
+  parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+  responses:
+    '200':
+      description: Contenido del informe
+      content:
+        text/plain:
+          schema:
+            type: string
+    '404':
+      description: Informe no encontrado

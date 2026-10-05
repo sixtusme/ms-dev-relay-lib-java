@@ -1,0 +1,14 @@
+get:
+  tags:
+    - Insights
+  operationId: listInsightsCatalog
+  summary: Lista el catálogo de insights
+  responses:
+    '200':
+      description: Catálogo
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '../../../schemas/response/InsightCatalogItemDto.yaml'

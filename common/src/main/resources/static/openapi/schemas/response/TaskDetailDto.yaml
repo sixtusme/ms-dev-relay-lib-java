@@ -1,0 +1,33 @@
+type: object
+properties:
+  issueKey:
+    type: string
+  title:
+    type: string
+  epic:
+    type: string
+  status:
+    type: string
+  stage:
+    type: string
+  stageKey:
+    type: string
+  requestedBy:
+    type: string
+  startedAt:
+    type: string
+  durationMs:
+    type: integer
+    format: int64
+  events:
+    type: array
+    items:
+      $ref: '../common/TaskEventDto.yaml'
+  deployments:
+    type: array
+    items:
+      $ref: '../common/TaskDeploymentDto.yaml'
+  phases:
+    type: array
+    items:
+      $ref: '../common/TaskPhaseDto.yaml'

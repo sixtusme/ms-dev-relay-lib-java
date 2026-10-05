@@ -1,0 +1,21 @@
+get:
+  tags:
+    - Reports
+  operationId: listReports
+  summary: Lista los informes indexados
+  parameters:
+    - name: issueKey
+      in: query
+      required: false
+      description: Si se indica, solo los de esa tarea
+      schema:
+        type: string
+  responses:
+    '200':
+      description: Informes
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '../../../schemas/response/ReportDto.yaml'

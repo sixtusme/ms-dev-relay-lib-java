@@ -1,0 +1,23 @@
+type: object
+properties:
+  repo:
+    type: string
+  number:
+    type: integer
+    format: int32
+  url:
+    type: string
+  branch:
+    type: string
+  base:
+    type: string
+  verification:
+    type: string
+    description: PENDING (compilando), OK, FAILED, o NONE si no se ha verificado.
+    enum:
+      - NONE
+      - PENDING
+      - OK
+      - FAILED
+  verificationDetail:
+    type: string

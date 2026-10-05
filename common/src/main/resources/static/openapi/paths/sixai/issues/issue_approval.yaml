@@ -1,0 +1,18 @@
+post:
+  tags:
+    - Approvals
+  operationId: approveIssue
+  summary: Aprueba una issue
+  description: >
+    Mergea sus PRs a develop y arranca el despliegue a PRE. X-Username lo pone
+    el security-gateway al validar el JWT y queda registrado en la línea de tiempo.
+  parameters:
+    - $ref: '../../../parameters/IssueKey.yaml'
+    - name: X-Username
+      in: header
+      required: false
+      schema:
+        type: string
+  responses:
+    '202':
+      description: Issue aceptada para aprobación

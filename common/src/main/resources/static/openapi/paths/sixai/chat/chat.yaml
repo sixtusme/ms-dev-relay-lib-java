@@ -1,0 +1,38 @@
+get:
+  tags:
+    - Chat
+  operationId: listChatHistory
+  summary: Obtiene el historial del chat de una tarea
+  parameters:
+    - name: issueKey
+      in: query
+      required: false
+      schema:
+        type: string
+  responses:
+    '200':
+      description: Historial
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '../../../schemas/response/ChatMessageDto.yaml'
+post:
+  tags:
+    - Chat
+  operationId: sendChatMessage
+  summary: Envía un mensaje al chat y devuelve la respuesta
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../../../schemas/request/ChatRequestDto.yaml'
+  responses:
+    '200':
+      description: Respuesta del chat
+      content:
+        application/json:
+          schema:
+            $ref: '../../../schemas/response/ChatMessageDto.yaml'

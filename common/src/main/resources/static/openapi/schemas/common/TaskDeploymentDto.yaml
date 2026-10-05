@@ -1,0 +1,14 @@
+type: object
+properties:
+  repo:
+    type: string
+  environment:
+    type: string
+  phase:
+    type: string
+  stage:
+    type: string
+  status:
+    type: string
+  version:
+    type: string

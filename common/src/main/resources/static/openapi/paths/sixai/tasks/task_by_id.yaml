@@ -1,0 +1,16 @@
+get:
+  tags:
+    - Tasks
+  operationId: getTaskDetail
+  summary: Obtiene el detalle de una tarea (línea de tiempo, despliegues y fases)
+  parameters:
+    - $ref: '../../../parameters/IssueKey.yaml'
+  responses:
+    '200':
+      description: Detalle de la tarea
+      content:
+        application/json:
+          schema:
+            $ref: '../../../schemas/response/TaskDetailDto.yaml'
+    '404':
+      description: Tarea no encontrada

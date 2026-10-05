@@ -1,0 +1,22 @@
+type: object
+properties:
+  issueKey:
+    type: string
+  title:
+    type: string
+  stage:
+    type: string
+    description: Etapa en texto legible ("Compilando develop", "Esperando aprobación").
+  stageKey:
+    type: string
+    description: Identificador de la etapa, para elegir color/icono sin parsear texto.
+  detail:
+    type: string
+  startedAt:
+    type: string
+  elapsedMs:
+    type: integer
+    format: int64
+  prCount:
+    type: integer
+    format: int32
