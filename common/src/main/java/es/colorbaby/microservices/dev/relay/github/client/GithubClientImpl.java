@@ -81,25 +81,36 @@ public class GithubClientImpl implements GithubClient {
    */
   @Override
   public String commitFiles(final String repo, final String branch,
-      final Map<String, String> files, final String message) {
-    if (files == null || files.isEmpty()) {
-      throw new GithubClientException("No hay ficheros que commitear en " + repo);
+      final Map<String, String> files, final List<String> deletes, final String message) {
+    final Map<String, String> writes = files == null ? Map.of() : files;
+    final List<String> removals = deletes == null ? List.of() : deletes;
+    if (writes.isEmpty() && removals.isEmpty()) {
+      throw new GithubClientException("No hay cambios que commitear en " + repo);
     }
     final String headSha = getBranchSha(repo, branch);
     final String baseTree = treeShaOf(repo, headSha);
 
     // Cada entrada lleva el contenido en claro: GitHub crea el blob. mode 100644 = fichero normal.
     final List<Map<String, String>> entries = new ArrayList<>();
-    files.forEach((path, content) -> entries.add(Map.of(
+    writes.forEach((path, content) -> entries.add(Map.of(
         "path", path,
         "mode", "100644",
         "type", "blob",
         "content", content == null ? "" : content)));
+    // Borrar es una entrada con sha null. Map.of no admite nulos, de ahí el HashMap.
+    for (final String path : removals) {
+      final Map<String, String> removal = new HashMap<>();
+      removal.put("path", path);
+      removal.put("mode", "100644");
+      removal.put("type", "blob");
+      removal.put("sha", null);
+      entries.add(removal);
+    }
 
     final Map<?, ?> tree = execute(
         () -> githubRestTemplate.postForObject(repoUrl(repo) + "/git/trees",
             Map.of("base_tree", baseTree, "tree", entries), Map.class),
-        "creando el árbol de " + files.size() + " fichero(s) en " + repo);
+        "creando el árbol de " + entries.size() + " cambio(s) en " + repo);
     final String treeSha = tree == null ? null : str(tree.get("sha"));
 
     final Map<?, ?> commit = execute(

@@ -74,10 +74,12 @@ public interface GithubClient {
    * @param repo    nombre del repo
    * @param branch  rama sobre la que se commitea
    * @param files   ruta → contenido completo del fichero (texto). Crea o sobrescribe
+   * @param deletes rutas a borrar en el mismo commit
    * @param message mensaje del commit
    * @return SHA del commit creado
    */
-  String commitFiles(String repo, String branch, Map<String, String> files, String message);
+  String commitFiles(String repo, String branch, Map<String, String> files, List<String> deletes,
+      String message);
 
   /**
    * Rutas de todos los ficheros (blobs) de una rama, recursivo. Le da al coder el mapa del repo.
